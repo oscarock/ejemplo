@@ -19,7 +19,7 @@
   </head>
     <body>
         <div class="container">
-            <h1 class="text-center">Contact Address</h1>
+            <h1 class="text-center">Consulta del Clima</h1>
             <hr>
             <div class="col-sm-6 offset-md-3 p-3">
                 <select class="form-control" id="citySelect">
@@ -35,15 +35,16 @@
             </div>
 
             <div class="col-sm-4" id="contact2">
-                <h3>Sedi e Contatti</h3>
+                <h3 id="country_city">Pais - Ciudad</h3>
                 <hr align="left" width="50%">
-                <h4 class="pt-2">Sede operativa</h4>
-                <i class="fas fa-globe" style="color:#000"></i> address<br>
-                <h4 class="pt-2">Contatti</h4>
-                <i class="fas fa-phone" style="color:#000"></i> <a href="tel:+"> 123456 </a><br>
-                <i class="fab fa-whatsapp" style="color:#000"></i><a href="tel:+"> 123456 </a><br>
-                <h4 class="pt-2">Email</h4>
-                <i class="fa fa-envelope" style="color:#000"></i> <a href="">test@test.com</a><br>
+                <h4 class="pt-2">Datos</h4>
+                <span><b>Latitud: </b></span><span id="lat">---</span><br> 
+                <span><b>Longitud: </b></span><span id="long">---</span><br> 
+                <span><b>Humedad: </b></span><span id="humidity">---</span><br>  
+                <span><b>Visibilidad: </b></span><span id="visibility">---</span><br>
+                <span><b>Presión: </b></span><span id="pressure">---</span>
+                <hr>
+                <a href="history">Ver Historial</a>
             </div>
         </div>
 
@@ -62,8 +63,14 @@
                 });
             }
 
+            function rederMap(latitud,longitud){
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: latitud, lng:longitud},
+                    zoom: 8
+                });
+            }
+
             $("#citySelect").change(function(){
-                console.log($(this).val())
                 $.ajax({
                     method: "POST",
                     url: 'api',
@@ -72,7 +79,14 @@
                         city: $(this).val()
                     },
                 }).done(function(response){
-                   console.log(response)
+                   var json = JSON.parse(response);+
+                   rederMap(json.lat,json.long)
+                   $("#country_city").html(json.country + ' - ' + json.city)
+                   $("#lat").html(json.lat)
+                   $("#long").html(json.long)
+                   $("#humidity").html(json.humidity)
+                   $("#visibility").html(json.visibility)
+                   $("#pressure").html(json.pressure)
                 })
             })
         </script>
